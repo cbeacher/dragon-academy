@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dragon Academy</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Dragon Academy">
+<meta name="theme-color" content="#7a1f0d">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<link rel="icon" href="assets/icons/icon-192.png">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="css/fonts.css">
+<link rel="stylesheet" href="css/style.css">
+<script>
+(function () {
+  var params = new URLSearchParams(location.search);
+  if (params.has("reset")) {
+    localStorage.removeItem("purse-save-chemistry-v2");
+    localStorage.removeItem("purse-mode-v1");
+    params.delete("reset");
+    var qs = params.toString();
+    history.replaceState(null, "", location.pathname + (qs ? "?" + qs : ""));
+  }
+})();
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("sw.js");
+  });
+}
+</script>
+</head>
+<body>
+<div class="app">
+
+  <div class="hud">
+    <div class="hud-top">
+      <button class="how-to-btn" id="how-to-btn" type="button" aria-label="How to Play">❓ How to Play</button>
+      <h1><span class="title-emoji">🐲</span> Dragon Academy</h1>
+      <div class="subject" id="subject-title">Chemistry: The Periodic Table</div>
+    </div>
+    <div class="subject-picker" id="subject-picker">
+      <div class="picker-row" id="picker-top"></div>
+      <div class="picker-row" id="picker-sub"></div>
+    </div>
+    <div class="level-row">
+      <span class="level-badge" id="level-badge">Level 1</span>
+      <div class="xp-bar-track"><div class="xp-bar-fill" id="xp-fill"></div></div>
+      <span class="xp-label" id="xp-label">0 / 30 XP</span>
+    </div>
+    <div class="collection-count" id="collection-count">0 creatures collected</div>
+    <button class="view-collection-btn" id="view-collection-btn" type="button">View Collection</button>
+  </div>
+
+  <div class="stage">
+    <div class="dragon-wrap" id="dragon-wrap">
+      <div id="dragon" class="dragon idle"></div>
+    </div>
+    <div class="speech-bubble" id="speech">Ready when you are!</div>
+
+    <div class="feedback-panel" id="feedback-panel">
+      <span class="heading" id="feedback-heading"></span>
+      <p id="feedback-text"></p>
+    </div>
+
+    <div class="table-reveal" id="table-reveal">
+      <div class="table-reveal-inner">
+        <canvas id="table-canvas"></canvas>
+      </div>
+    </div>
+
+    <div class="question-plaque">
+      <div class="question-topic" id="question-topic">Chemistry · The Periodic Table</div>
+      <p class="question-prompt" id="question-prompt">Loading question…</p>
+    </div>
+    <div class="options" id="options"></div>
+
+    <button class="next-btn" id="next-btn" style="display:none;">Next Question</button>
+  </div>
+
+  <div class="attribution">Dragon art by <a href="https://www.freepik.com" target="_blank" rel="noopener">Freepik</a></div>
+
+</div>
+
+<div class="levelup-flash" id="levelup-flash"></div>
+
+<div class="levelup-overlay" id="levelup-overlay">
+  <div class="levelup-card">
+    <div class="levelup-egg-wrap">
+      <div class="levelup-particles" id="levelup-particles"></div>
+      <div class="levelup-egg" id="levelup-egg">🥚</div>
+    </div>
+    <div class="levelup-title" id="levelup-title">Level Up!</div>
+    <div class="levelup-name" id="levelup-name"></div>
+    <div class="levelup-hint">Tap anywhere to continue</div>
+  </div>
+</div>
+
+<div class="collection-modal" id="collection-modal">
+  <div class="collection-modal-card">
+    <div class="collection-modal-header">
+      <h2>Dragon Collection</h2>
+      <button class="collection-close-btn" id="collection-close-btn" type="button">✕</button>
+    </div>
+    <div class="collection-grid" id="collection-grid"></div>
+  </div>
+</div>
+
+<div class="instructions-modal" id="instructions-modal">
+  <div class="instructions-modal-card">
+    <div class="instructions-modal-header">
+      <h2>How to Play</h2>
+      <button class="collection-close-btn" id="instructions-close-btn" type="button">✕</button>
+    </div>
+    <div class="instructions-body">
+      <div class="instructions-body-inner">
+        <h3>Answering questions</h3>
+        <p>Pick an answer for each question. A wrong answer never costs you anything — no
+        score loss, no penalty — you'll just see the explanation and move on to the next
+        question. So there's no reason not to take a guess.</p>
+
+        <h3>XP and levelling up</h3>
+        <p>Every correct answer earns XP, shown in the bar at the top. Once the bar fills,
+        you level up — the egg in the middle of the screen moves one step further through
+        its hatching sequence, and your level number goes up.</p>
+
+        <h3>Hatching dragons</h3>
+        <p>Once the egg finishes its hatching sequence, a brand-new dragon joins your
+        collection and the egg resets to start again. There are 50 dragons in total,
+        grouped into 10 families of 5 — the first dragon in a family is common, the last
+        is rare, so it takes a while to complete a whole family. Tap <strong>View
+        Collection</strong> any time to see who you've found so far.</p>
+
+        <h3>Subjects</h3>
+        <p>Use the picker at the top to choose what you're revising — Science (Chemistry,
+        Physics) or HASS (Economics, Geography, History), or mix everything together.
+        Some dragon families can only be hatched from a specific subject's questions, so
+        switching subjects is the way to unlock every family. Your level and XP are
+        shared across every subject — only the question pool changes.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/backgrounds.js"></script>
+<script src="js/flying-dragons.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/subjects/chemistry.js"></script>
+<script src="js/subjects/physics.js"></script>
+<script src="js/subjects/economics.js"></script>
+<script src="js/subjects/geography.js"></script>
+<script src="js/subjects/history.js"></script>
+<script src="js/periodic-table.js"></script>
+<script src="js/dragon.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>
