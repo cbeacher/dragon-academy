@@ -190,7 +190,7 @@ body {
    needs its own rule rather than riding the shared text-shadow above. */
 .title-emoji {
   display: inline-block;
-  filter: drop-shadow(3px 4px 4px rgba(0, 0, 0, 0.8));
+  text-shadow: 3px 4px 4px rgba(0, 0, 0, 0.8);
 }
 
 .hud-top h1 {
