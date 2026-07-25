@@ -1,4 +1,4 @@
-const CACHE_NAME = "dragon-academy-v3";
+const CACHE_NAME = "dragon-academy-v4";
 const SCOPE_URL = new URL(self.registration.scope);
 
 const PRECACHE_PATHS = [
