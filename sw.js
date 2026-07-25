@@ -1,4 +1,4 @@
-const CACHE_NAME = "dragon-academy-v2";
+const CACHE_NAME = "dragon-academy-v3";
 const SCOPE_URL = new URL(self.registration.scope);
 
 const PRECACHE_PATHS = [
@@ -99,6 +99,7 @@ const PRECACHE_PATHS = [
   "assets/icons/apple-touch-icon.png",
   "assets/icons/icon-192.png",
   "assets/icons/icon-512.png",
+  "assets/icons/logo-dragon-head.png",
   "assets/periodic-table/full-table.png",
   "css/fonts.css",
   "css/style.css",
