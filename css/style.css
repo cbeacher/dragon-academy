@@ -166,6 +166,15 @@ body {
   padding-top: 2px;
 }
 
+.hud-actions-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
 /* Gold-foil book-title lettering: a light-to-dark gold gradient fill (not a
    flat color) plus a real shadow, rather than relying on text-shadow alone —
    that's what actually reads as embossed/stamped foil rather than just
@@ -220,28 +229,23 @@ body {
 }
 
 .hud-top .subject {
-  position: absolute;
-  top: 4px;
-  right: 0;
   font-size: 0.8rem;
   font-weight: 700;
   padding: 4px 10px;
   border-radius: 999px;
+  border: 2px dashed rgba(255, 213, 74, 0.6);
   background: rgba(15, 7, 3, 0.68);
   color: #f0dfc0;
   text-shadow: none;
 }
 
 .how-to-btn {
-  position: absolute;
-  top: 4px;
-  left: 0;
   font-family: inherit;
   font-size: 0.8rem;
   font-weight: 700;
   padding: 4px 10px;
   border-radius: 999px;
-  border: none;
+  border: 2px dashed rgba(255, 213, 74, 0.6);
   background: rgba(15, 7, 3, 0.68);
   color: #f0dfc0;
   cursor: pointer;
@@ -410,6 +414,19 @@ body {
 }
 
 .view-collection-btn:hover { background: var(--purple-dark); }
+
+.save-restore-btn {
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 2px dashed rgba(255, 213, 74, 0.6);
+  background: rgba(15, 7, 3, 0.68);
+  color: #f0dfc0;
+  cursor: pointer;
+}
+
 
 @keyframes soft-glow-text {
   0%, 100% { text-shadow: 0 0 0 rgba(232, 184, 75, 0); }

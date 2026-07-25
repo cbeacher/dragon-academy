@@ -3,15 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dragon Academy</title>
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Dragon Academy">
-<meta name="theme-color" content="#7a1f0d">
-<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
-<link rel="icon" href="assets/icons/icon-192.png">
-<link rel="manifest" href="manifest.json">
+<title>Purse — Dragon Academy</title>
 <link rel="stylesheet" href="css/fonts.css">
 <link rel="stylesheet" href="css/style.css">
 <script>
@@ -25,11 +17,6 @@
     history.replaceState(null, "", location.pathname + (qs ? "?" + qs : ""));
   }
 })();
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", function () {
-    navigator.serviceWorker.register("sw.js");
-  });
-}
 </script>
 </head>
 <body>
@@ -37,13 +24,17 @@ if ("serviceWorker" in navigator) {
 
   <div class="hud">
     <div class="hud-top">
-      <button class="how-to-btn" id="how-to-btn" type="button" aria-label="How to Play">❓ How to Play</button>
       <div class="hud-title">
         <img class="title-emoji" src="assets/icons/logo-dragon-head.png" alt="">
         <h1>Dragon Academy</h1>
       </div>
       <div class="credit-line">Created by Clinton and Claude<br>All Rights Reserved</div>
-      <div class="subject" id="subject-title">Chemistry: The Periodic Table</div>
+      <div class="hud-actions-row">
+        <button class="how-to-btn" id="how-to-btn" type="button" aria-label="How to Play">❓ How to Play</button>
+        <button class="save-restore-btn" id="save-progress-btn" type="button">💾 Save Progress</button>
+        <button class="save-restore-btn" id="restore-progress-btn" type="button">📤 Restore Progress</button>
+        <div class="subject" id="subject-title">Chemistry: The Periodic Table</div>
+      </div>
     </div>
     <div class="subject-picker" id="subject-picker">
       <div class="picker-row" id="picker-top"></div>

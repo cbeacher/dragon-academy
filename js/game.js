@@ -187,6 +187,8 @@
     xpLabel: document.getElementById("xp-label"),
     collectionCount: document.getElementById("collection-count"),
     viewCollectionBtn: document.getElementById("view-collection-btn"),
+    saveProgressBtn: document.getElementById("save-progress-btn"),
+    restoreProgressBtn: document.getElementById("restore-progress-btn"),
     collectionModal: document.getElementById("collection-modal"),
     collectionGrid: document.getElementById("collection-grid"),
     collectionCloseBtn: document.getElementById("collection-close-btn"),
@@ -286,6 +288,91 @@
 
   function saveProgress() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+  }
+
+  // Compact obfuscated save code, not human-readable JSON — a curious kid
+  // opening the exported file shouldn't be able to just add numbers to a
+  // plain "unlockedIndices" array and grant themselves every dragon.
+  const SAVE_PREFIX = "DA1-";
+  const SAVE_XOR_BASE = 0xA5;
+
+  function encodeSaveCode() {
+    const bytes = new Uint8Array(13);
+    bytes[0] = 1;
+    bytes[1] = (progress.xp >> 8) & 0xff;
+    bytes[2] = progress.xp & 0xff;
+    bytes[3] = progress.hatchStep & 0xff;
+    bytes[4] = (progress.totalHatches >> 8) & 0xff;
+    bytes[5] = progress.totalHatches & 0xff;
+    (progress.unlockedIndices || []).forEach((i) => {
+      if (i >= 0 && i < 56) bytes[6 + Math.floor(i / 8)] |= 1 << (i % 8);
+    });
+    for (let i = 0; i < bytes.length; i++) bytes[i] ^= (SAVE_XOR_BASE + i) & 0xff;
+    let bin = "";
+    for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+    return SAVE_PREFIX + btoa(bin).replace(/=+$/, "");
+  }
+
+  function decodeSaveCode(code) {
+    const trimmed = (code || "").trim();
+    if (!trimmed.startsWith(SAVE_PREFIX)) return null;
+    let bin;
+    try {
+      bin = atob(trimmed.slice(SAVE_PREFIX.length));
+    } catch (e) {
+      return null;
+    }
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    for (let i = 0; i < bytes.length; i++) bytes[i] ^= (SAVE_XOR_BASE + i) & 0xff;
+    if (bytes.length < 13 || bytes[0] !== 1) return null;
+    const unlockedIndices = [];
+    for (let i = 0; i < 50; i++) {
+      if (bytes[6 + Math.floor(i / 8)] & (1 << (i % 8))) unlockedIndices.push(i);
+    }
+    return {
+      xp: (bytes[1] << 8) | bytes[2],
+      hatchStep: bytes[3],
+      totalHatches: (bytes[4] << 8) | bytes[5],
+      unlockedIndices,
+    };
+  }
+
+  function downloadSaveFile() {
+    const code = encodeSaveCode();
+    const stamp = new Date().toISOString().slice(0, 10);
+    const contents =
+      "Dragon Academy - Save Code\n" +
+      "Saved: " + stamp + "\n\n" +
+      code + "\n\n" +
+      "To restore this progress, open Dragon Academy, tap \"Restore Progress\",\n" +
+      "and paste this code in.\n";
+    const blob = new Blob([contents], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "dragon-academy-save-" + stamp + ".txt";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function restoreFromPrompt() {
+    const pasted = window.prompt("Paste your Dragon Academy save code:");
+    if (pasted === null) return;
+    const match = pasted.match(/DA1-[A-Za-z0-9+/_-]+/);
+    const decoded = decodeSaveCode(match ? match[0] : pasted);
+    if (!decoded) {
+      window.alert("That doesn't look like a valid save code — nothing was changed.");
+      return;
+    }
+    if (!window.confirm("Restore this save? Your current progress on this device will be replaced.")) {
+      return;
+    }
+    progress = decoded;
+    saveProgress();
+    location.reload();
   }
 
   function levelFromXp(xp) {
@@ -616,6 +703,8 @@
     renderCollectionGrid();
     els.collectionModal.classList.add("show");
   });
+  els.saveProgressBtn.addEventListener("click", downloadSaveFile);
+  els.restoreProgressBtn.addEventListener("click", restoreFromPrompt);
   els.collectionCloseBtn.addEventListener("click", () => {
     els.collectionModal.classList.remove("show");
   });
