@@ -239,7 +239,8 @@ body {
   text-shadow: none;
 }
 
-.how-to-btn {
+.how-to-btn,
+.mute-btn {
   font-family: inherit;
   font-size: 0.8rem;
   font-weight: 700;
@@ -251,7 +252,8 @@ body {
   cursor: pointer;
 }
 
-.how-to-btn:hover {
+.how-to-btn:hover,
+.mute-btn:hover {
   background: rgba(15, 7, 3, 0.85);
 }
 

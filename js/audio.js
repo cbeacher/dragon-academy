@@ -37,6 +37,31 @@
   let started = false;
   let lastMusicTrack = null;
 
+  // Plain, practical mute — no per-layer volume mixer, just an on/off switch
+  // applied to every audio element this module creates. Persisted so it
+  // survives a reload/level-up background change.
+  const MUTE_KEY = "purse-audio-muted";
+  let muted = localStorage.getItem(MUTE_KEY) === "1";
+  const activeAudios = new Set();
+
+  function makeAudio(src) {
+    const audio = new Audio(src);
+    audio.muted = muted;
+    activeAudios.add(audio);
+    audio.addEventListener("ended", () => activeAudios.delete(audio));
+    return audio;
+  }
+
+  function setMuted(value) {
+    muted = value;
+    try {
+      localStorage.setItem(MUTE_KEY, muted ? "1" : "0");
+    } catch (e) {
+      /* ignore storage errors, mute state just won't persist */
+    }
+    activeAudios.forEach((a) => (a.muted = muted));
+  }
+
   function pickDifferent(list, last) {
     if (list.length === 1) return list[0];
     let choice;
@@ -49,14 +74,14 @@
   function playNextMusicTrack() {
     const track = pickDifferent(MUSIC_TRACKS, lastMusicTrack);
     lastMusicTrack = track;
-    const audio = new Audio(DIR + track);
+    const audio = makeAudio(DIR + track);
     audio.volume = MUSIC_VOLUME;
     audio.addEventListener("ended", playNextMusicTrack);
     audio.play().catch(() => {});
   }
 
   function startFireCrackle() {
-    const audio = new Audio(DIR + "fireplace-crackle.mp3");
+    const audio = makeAudio(DIR + "fireplace-crackle.mp3");
     audio.loop = true;
     audio.volume = FIRE_VOLUME;
     audio.play().catch(() => {});
@@ -66,7 +91,7 @@
     const delay = 15000 + Math.random() * 25000; // 15-40s, matches flying-dragons.js cadence
     setTimeout(function () {
       const file = DRAGON_SFX[Math.floor(Math.random() * DRAGON_SFX.length)];
-      const audio = new Audio(DIR + file);
+      const audio = makeAudio(DIR + file);
       audio.volume = DRAGON_VOLUME;
       audio.play().catch(() => {});
       scheduleDragonSfx();
@@ -84,5 +109,21 @@
   document.addEventListener("click", start, { once: true });
   document.addEventListener("keydown", start, { once: true });
 
-  window.PurseAudio = { start: start };
+  function wireMuteButton() {
+    const btn = document.getElementById("mute-btn");
+    if (!btn) return;
+    const render = () => {
+      btn.textContent = muted ? "🔇" : "🔊";
+      btn.setAttribute("aria-label", muted ? "Unmute sound" : "Mute sound");
+    };
+    render();
+    btn.addEventListener("click", () => {
+      setMuted(!muted);
+      render();
+    });
+  }
+  document.addEventListener("DOMContentLoaded", wireMuteButton);
+  if (document.readyState !== "loading") wireMuteButton();
+
+  window.PurseAudio = { start: start, setMuted: setMuted, isMuted: () => muted };
 })();
