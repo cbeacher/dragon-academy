@@ -3,7 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Purse — Dragon Academy</title>
+<title>Dragon Academy</title>
+<!-- iOS home-screen "app" behavior: hides Safari's chrome when launched from
+     the icon (added to Home Screen) rather than opening as a regular tab. -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Dragon Academy">
+<meta name="theme-color" content="#7a1f0d">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<link rel="icon" href="assets/icons/icon-192.png">
+<link rel="manifest" href="manifest.json">
 <link rel="stylesheet" href="css/fonts.css">
 <link rel="stylesheet" href="css/style.css">
 <script>
@@ -17,6 +27,11 @@
     history.replaceState(null, "", location.pathname + (qs ? "?" + qs : ""));
   }
 })();
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("sw.js");
+  });
+}
 </script>
 </head>
 <body>
